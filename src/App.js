@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
-import {View, Text} from 'react-native';
 import {Provider} from 'react-redux';
-import {createStore} from 'redux';
+import {createStore, applyMiddleware} from 'redux';
 import firebase from 'firebase';
+import ReduxThunk from 'redux-thunk';
 import reducers from './reducers';
 import LoginForm from './components/LoginFrom';
 
@@ -20,7 +20,7 @@ class App extends Component {
     };
     // Initialize Firebase
     console.log(
-      `In componentDidMount firebase.app.length: ${firebase.apps.length}`
+      `In componentDidMount firebase.app.length: ${firebase.apps.length}`,
     );
     if (!firebase.apps.length) {
       console.log('Before initializing firebase');
@@ -29,8 +29,15 @@ class App extends Component {
   }
 
   render() {
+    // ReduxThunk is a store enhancer
+    const store = createStore(
+      reducers,
+      {} /* initial state*/,
+      applyMiddleware(ReduxThunk),
+    );
+
     return (
-      <Provider store={createStore(reducers)}>
+      <Provider store={store}>
         <LoginForm />
       </Provider>
     );
