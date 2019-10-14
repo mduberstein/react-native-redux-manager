@@ -1,5 +1,5 @@
 import firease from 'firebase';
-import {EMAIL_CHANGED, PASSWORD_CHANGED} from './types';
+import {EMAIL_CHANGED, PASSWORD_CHANGED, LOGIN_USER_SUCCESS} from './types';
 
 export const emailChanged = text => {
   return {
@@ -21,7 +21,7 @@ export const loginUser = ({email, password}) => {
     .then(user => {
       console.log('Before dispatching LOGIN_USER_SUCCESS');
       // async action dispatch
-      dispatch({type: 'LOGIN_USER_SUCCESS', payload: user});
+      dispatch({type: LOGIN_USER_SUCCESS, payload: user});
     });
   };
 };
