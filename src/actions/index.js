@@ -1,5 +1,10 @@
 import firease from 'firebase';
-import {EMAIL_CHANGED, PASSWORD_CHANGED, LOGIN_USER_SUCCESS} from './types';
+import {
+  EMAIL_CHANGED,
+  PASSWORD_CHANGED,
+  LOGIN_USER_SUCCESS,
+  LOGIN_USER_FAIL,
+} from './types';
 
 export const emailChanged = text => {
   return {
@@ -16,12 +21,28 @@ export const passwordChanged = text => {
 };
 
 export const loginUser = ({email, password}) => {
-  return (dispatch) => {
-    firease.auth().signInWithEmailAndPassword(email, password)
-    .then(user => {
-      console.log('Before dispatching LOGIN_USER_SUCCESS');
+  return dispatch => {
+    firease
+      .auth()
+      .signInWithEmailAndPassword(email, password)
       // async action dispatch
-      dispatch({type: LOGIN_USER_SUCCESS, payload: user});
-    });
+      .then(user => loginUserSuccess(dispatch, user))
+      .catch(() => {
+        firease
+          .auth()
+          .createUserWithEmailAndPassword(email, password)
+          .then(user => loginUserSuccess(dispatch, user))
+          .catch(() => loginUserFail(dispatch));
+      });
   };
+};
+const loginUserFail = dispatch => {
+  dispatch({
+    type: LOGIN_USER_FAIL,
+  });
+};
+
+const loginUserSuccess = (dispatch, user) => {
+  console.log('Before dispatching LOGIN_USER_SUCCESS');
+  dispatch({type: LOGIN_USER_SUCCESS, payload: user});
 };
